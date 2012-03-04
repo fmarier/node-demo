@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title><%=: title | capitalize %></title>
+</head>
+<body>
+
+<h1><%=: title | capitalize %></h1>
+
+<%- body %>
+
+<% if (title != 'index') { %>
+<hr>
+<p><a href="/">Back to main menu</a></p>
+<% } %>
+
+</body>
+</html>
