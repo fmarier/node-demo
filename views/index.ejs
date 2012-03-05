@@ -1,3 +1,5 @@
 <ul>
-<li><a href="/count">Count</a></li>
+<% actions.forEach(function (action) { %>
+<li><a href="/<%= action %>"><%=: action| capitalize %></a></li>
+<% }); %>
 </ul>
