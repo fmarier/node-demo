@@ -8,6 +8,14 @@
 
 <h1><%=: title | capitalize %></h1>
 
+<% error.forEach(function (msg) { %>
+<p class="error-message"><%= msg %></p>
+<% }); %>
+
+<% info.forEach(function (msg) { %>
+<p class="info-message"><%= msg %></p>
+<% }); %>
+
 <%- body %>
 
 <% if (title != 'index') { %>

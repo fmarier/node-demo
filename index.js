@@ -45,24 +45,72 @@ function createAccount(username, handleResult) {
                  });
 }
 
+function authenticateUser(username, logUserIn) {
+    if (!username) {
+        logUserIn('Missing username');
+        return;
+    }
+
+    client.query('USE nodedemo');
+    client.query("SELECT id FROM accounts where username = ?", [username], function (err, results, field) {
+                     if (err) {
+                         logUserIn(err);
+                     } else {
+                         if (results.length > 0) {
+                             logUserIn();
+                         } else {
+                             logUserIn('Username not found. Have you registered yet?');
+                         }
+                     }
+                 });
+}
+
 const app = express.createServer();
 app.use(express.limit('1mb'));
 app.use(express.bodyParser());
 app.use(express.static('static'));
+app.use(express.cookieParser());
+app.use(express.session({ secret: "secret string in a public repo ftw!" }));
 
 app.get('/', function(req, res) {
-            res.render('index.ejs', {title: 'index', actions: ['count', 'register']});
+            res.render('index.ejs', {title: 'index', info: req.flash('info'), error: req.flash('error'),
+                                     actions: ['count', 'login', 'logout', 'register'],
+                                     username: req.session.username});
         });
 
 app.get('/count', function(req, res) {
             readCounter(function (countValue) {
-                            res.render('count.ejs', {title: 'count', count: countValue});
+                            res.render('count.ejs', {title: 'count', info: req.flash('info'), error: req.flash('error'),
+                                                     count: countValue});
                             bumpCounter();
                         });
         });
 
+app.get('/login', function(req, res) {
+            res.render('login.ejs', {title: 'login', info: req.flash('info'), error: req.flash('error')});
+        });
+
+app.get('/logout', function(req, res) {
+            delete req.session.username;
+            res.redirect('home');
+        });
+
+app.post('/login', function(req, res) {
+             var username = req.body.username;
+             authenticateUser(username, function (error) {
+                                  if (error) {
+                                      req.flash('error', error);
+                                      res.render('login.ejs', {title: 'login', info: req.flash('info'), error: req.flash('error')});
+                                  } else {
+                                      req.flash("info", username + " logged in");
+                                      req.session.username = username;
+                                      res.redirect('home');
+                                  }
+                              });
+         });
+
 app.get('/register', function(req, res) {
-            res.render('register.ejs', {title: 'register', error: false});
+            res.render('register.ejs', {title: 'register', info: req.flash('info'), error: req.flash('error')});
         });
 
 app.post('/register', function(req, res) {
@@ -73,10 +121,10 @@ app.post('/register', function(req, res) {
              }
              createAccount(username, function (error) {
                                if (error) {
-                                   res.render('register.ejs', {title: 'register', error: error});
+                                   req.flash('error', error);
+                                   res.render('register.ejs', {title: 'register', info: req.flash('info'), error: req.flash('error')});
                                } else {
-                                   // TODO: convert to req.flash()
-                                   console.log(username + ' user account successfully created');
+                                   req.flash("info", username + " user account successfully created");
                                    res.redirect('home');
                                }
                            });
