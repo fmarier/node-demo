@@ -1,0 +1,11 @@
+<form action="/profile" method="post">
+<table>
+<tr><td><label for="username">Username:</label></td><td><input type="text" name="username" id="username" value="<%= account.username %>"></td></tr>
+<tr><td><label for="firstname">First name:</label></td><td><input type="text" name="firstname" id="firstname" value="<%= account.firstname || '' %>"></td></tr>
+<tr><td><label for="lastname">Last name:</label></td><td><input type="text" name="lastname" id="lastname" value="<%= account.lastname || '' %>"></td></tr>
+<tr><td><label for="email">Email:</label></td><td><input type="text" name="email" id="email" value="<%= account.email || '' %>"></td></tr>
+</table>
+
+<input type="submit" value="Save">
+<input type="reset" value="Reset">
+</form>

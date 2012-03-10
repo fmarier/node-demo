@@ -1,6 +1,6 @@
 <ul>
 <% actions.forEach(function (action) { %>
-<% if (action === 'logout' && !username) return; %>
+<% if ((action === 'logout' || action === 'profile') && !username) return; %>
 <% if (action === 'login' && username) return; %>
 <li><a href="/<%= action %>"><%=: action| capitalize %></a></li>
 <% }); %>
