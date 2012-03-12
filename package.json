@@ -1,0 +1,19 @@
+{
+  "name": "node-demo",
+  "author": "Francois Marier <francois@fmarier.org> (http://fmarier.org)",
+  "version": "0.0.1",
+  "homepage": "https://github.com/fmarier/node-demo",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/fmarier/node-demo.git"
+  },
+  "engines": {
+    "node": ">=0.6.11"
+  },
+  "dependencies": {
+    "ejs": ">=0.6.1",
+    "mysql": ">=0.9.5",
+    "express": ">=2.5.8"
+  },
+  "main": "index"
+}
