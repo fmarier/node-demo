@@ -13,6 +13,7 @@
   "dependencies": {
     "ejs": ">=0.6.1",
     "mysql": ">=0.9.5",
+    "connect-form": ">=0.2",
     "express": ">=2.5.8"
   },
   "main": "index"
