@@ -14,6 +14,8 @@ var client = mysql.createClient({
 });
 client.query('USE nodedemo');
 
+const PHOTO_DIR = 'public/photos/';
+
 function bumpCounter() {
     client.query("UPDATE counter SET value = value + 1 WHERE name = 'main'");
 }
@@ -74,13 +76,13 @@ function updateUserProfile(username, fields, files, handleResult) {
                          if (err) {
                              throw err;
                          } else {
-                             fs.unlink('static/photos/' + results[0].photo);
+                             fs.unlink(PHOTO_DIR + results[0].photo);
                          }
                      });
 
         // Can't use fs.rename across filesystem boundaries (http://stackoverflow.com/questions/4568689)
         var is = fs.createReadStream(files.photo.path);
-        var os = fs.createWriteStream('static/photos/' + randomName);
+        var os = fs.createWriteStream(PHOTO_DIR + randomName);
         util.pump(is, os, function (err) {
                       fs.unlink(files.photo.path);
                       if (err) {
@@ -163,11 +165,9 @@ function authenticateUser(username, logUserIn) {
 
 const app = express.createServer();
 app.use(express.limit('1mb'));
-app.use(express.static('static'));
+app.use(express.static('public'));
 app.use(express.cookieParser());
 app.use(express.session({ secret: "secret string in a public repo ftw!" }));
-app.use(form({ keepExtensions: true }));
-//app.use(express.bodyParser()); // FIXME: re-enable with express 3 which can parse files submitted in form data
 
 app.get('/', function(req, res) {
             res.render('index.ejs', {title: 'index', info: req.flash('info'), error: req.flash('error'),
@@ -187,20 +187,18 @@ app.get('/login', function(req, res) {
             res.render('login.ejs', {title: 'login', info: req.flash('info'), error: req.flash('error')});
         });
 
-app.post('/login', function(req, res) {
-             req.form.complete(function (err, fields, files) {
-                                   var username = fields.username;
-                                   authenticateUser(username, function (error) {
-                                                        if (error) {
-                                                            req.flash('error', error);
-                                                            res.render('login.ejs', {title: 'login', info: req.flash('info'), error: req.flash('error')});
-                                                        } else {
-                                                            req.flash("info", username + " logged in");
-                                                            req.session.username = username;
-                                                            res.redirect('home');
-                                                        }
-                                                    });
-                               });
+app.post('/login', express.bodyParser(), function(req, res) {
+             var username = req.body.username;
+             authenticateUser(username, function (error) {
+                                  if (error) {
+                                      req.flash('error', error);
+                                      res.render('login.ejs', {title: 'login', info: req.flash('info'), error: req.flash('error')});
+                                  } else {
+                                      req.flash("info", username + " logged in");
+                                      req.session.username = username;
+                                      res.redirect('home');
+                                  }
+                              });
          });
 
 app.get('/logout', function(req, res) {
@@ -219,7 +217,8 @@ app.get('/profile', function(req, res) {
                            });
         });
 
-app.post('/profile', function(req, res) {
+app.post('/profile', form({ keepExtensions: true }), function(req, res) {
+             // FIXME: re-enable bodyParser with express 3 (which can parse files submitted in form data)
              req.form.complete(function (err, fields, files) {
                                    if (err) {
                                        next(err);
@@ -241,23 +240,21 @@ app.get('/register', function(req, res) {
             res.render('register.ejs', {title: 'register', info: req.flash('info'), error: req.flash('error')});
         });
 
-app.post('/register', function(req, res) {
-             req.form.complete(function (err, fields, files) {
-                                   var username = fields.username;
-                                   if (!username) {
-                                       res.redirect('home');
-                                       return;
-                                   }
-                                   createAccount(username, function (error) {
-                                                     if (error) {
-                                                         req.flash('error', error);
-                                                         res.render('register.ejs', {title: 'register', info: req.flash('info'), error: req.flash('error')});
-                                                     } else {
-                                                         req.flash("info", username + " user account successfully created");
-                                                         res.redirect('home');
-                                                     }
-                                                 });
-                               });
+app.post('/register', express.bodyParser(), function(req, res) {
+             var username = req.body.username;
+             if (!username) {
+                 res.redirect('home');
+                 return;
+             }
+             createAccount(username, function (error) {
+                               if (error) {
+                                   req.flash('error', error);
+                                   res.render('register.ejs', {title: 'register', info: req.flash('info'), error: req.flash('error')});
+                               } else {
+                                   req.flash("info", username + " user account successfully created");
+                                   res.redirect('home');
+                               }
+                           });
          });
 
 app.listen(9001);
