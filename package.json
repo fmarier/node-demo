@@ -16,5 +16,11 @@
     "connect-form": ">=0.2",
     "express": ">=2.5.8"
   },
+  "devDependencies": {
+    "vows": "0.5.13"
+  },
+  "scripts": {
+    "test": "node_modules/vows/bin/vows tests/*.js"
+  },
   "main": "index"
 }
