@@ -1,3 +1,6 @@
+<% if (dnt) { %>
+<p>Your privacy is important to us. We will not track you.</p>
+<% } %>
 <ul>
 <% actions.forEach(function (action) { %>
 <% if ((action === 'logout' || action === 'profile') && !username) return; %>

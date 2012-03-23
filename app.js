@@ -161,7 +161,7 @@ app.use(express.session({ secret: "secret string in a public repo ftw!" }));
 app.get('/', function(req, res) {
             res.render('index.ejs', {title: 'index', info: req.flash('info'), error: req.flash('error'),
                                      actions: ['count', 'login', 'logout', 'profile', 'register'],
-                                     username: req.session.username});
+                                     username: req.session.username, dnt: req.header('DNT')});
         });
 
 app.get('/count', function(req, res) {
