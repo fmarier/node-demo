@@ -6,6 +6,7 @@ express = require('express'),
 form = require('connect-form'),
 fs = require('fs'),
 util = require('util'),
+counter = require('./lib/counter.js'),
 mysql = require('mysql');
 
 var client = mysql.createClient({
@@ -15,19 +16,6 @@ var client = mysql.createClient({
 client.query('USE nodedemo');
 
 const PHOTO_DIR = 'public/photos/';
-
-function bumpCounter() {
-    client.query("UPDATE counter SET value = value + 1 WHERE name = 'main'");
-}
-
-function readCounter(displayCounter) {
-    client.query("SELECT value FROM counter WHERE name = 'main'", function (err, results, fields) {
-                     if (err) {
-                         throw err;
-                     }
-                     displayCounter(results[0].value);
-                 });
-}
 
 function getUserProfile(username, displayProfile) {
     if (!username) {
@@ -176,10 +164,10 @@ app.get('/', function(req, res) {
         });
 
 app.get('/count', function(req, res) {
-            readCounter(function (countValue) {
+            counter.read(function (countValue) {
                             res.render('count.ejs', {title: 'count', info: req.flash('info'), error: req.flash('error'),
                                                      count: countValue});
-                            bumpCounter();
+                            counter.bump();
                         });
         });
 
