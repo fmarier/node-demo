@@ -155,6 +155,7 @@ const app = express.createServer();
 app.use(express.limit('1mb'));
 app.use(express.static('public'));
 app.use(express.cookieParser());
+app.use(express.query());
 app.use(express.session({ secret: "secret string in a public repo ftw!" }));
 
 app.get('/', function(req, res) {
@@ -225,7 +226,7 @@ app.post('/profile', form({ keepExtensions: true }), function(req, res) {
          });
 
 app.get('/register', function(req, res) {
-            res.render('register.ejs', {title: 'register', info: req.flash('info'), error: req.flash('error')});
+            res.render('register.ejs', {title: 'register', info: req.flash('info'), error: req.flash('error'), key: req.query.key});
         });
 
 app.post('/register', express.bodyParser(), function(req, res) {
