@@ -9,6 +9,8 @@ util = require('util'),
 counter = require('./lib/counter.js'),
 mysql = require('mysql');
 
+process.title = "node-demo";
+
 var client = mysql.createClient({
   user: 'nodeuser',
   password: 'nodeuser'
