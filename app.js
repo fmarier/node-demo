@@ -249,3 +249,11 @@ app.post('/register', express.bodyParser(), function(req, res) {
          });
 
 app.listen(9001);
+
+function uptimeTicker() {
+    setTimeout(function () {
+                   console.log("Uptime: " + Math.floor(process.uptime()) + " seconds");
+                   uptimeTicker();
+               }, 60000);
+}
+uptimeTicker();
