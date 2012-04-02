@@ -94,7 +94,7 @@ function updateUserProfile(username, fields, files, handleResult) {
     var values = [];
 
     var sql = 'UPDATE accounts SET ';
-    for (var i=0; i < data.length; i++) {
+    for (var i=0, len=data.length; i < len; i++) {
         if (i > 0) {
             sql += ', ';
         }
